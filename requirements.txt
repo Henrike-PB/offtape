@@ -1,0 +1,13 @@
+# Núcleo (downloader + app web)
+# yt-dlp fica sem teto de versão de propósito: o YouTube muda com frequência
+# e só as versões mais recentes continuam funcionando. Atualize com:
+#   pip install -U yt-dlp
+yt-dlp>=2025.1.1
+mutagen>=1.47
+flask>=3.0,<4
+requests>=2.32.4,<3   # >=2.32.4 corrige CVE-2024-35195 e CVE-2024-47081
+
+# Opcional: notebook de análise dos relatórios (explore_report.ipynb)
+pandas>=2.0
+matplotlib>=3.8
+jupyter>=1.0
