@@ -5,7 +5,7 @@ padrão do código e como enviar sua contribuição.
 
 ## Como funciona
 
-- O Offtape é mantido por **Henrike Braga**, que revisa e decide o que entra
+- O Offtape é mantido por **Henrike Pajares Braga**, que revisa e decide o que entra
   no projeto.
 - O projeto usa a licença [MIT](LICENSE). Ao enviar uma contribuição, você
   concorda em disponibilizá-la sob essa mesma licença. Você continua autor(a)

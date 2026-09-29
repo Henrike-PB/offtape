@@ -272,9 +272,9 @@ e checklist do PR) está em **[CONTRIBUTING.md](CONTRIBUTING.md)**.
 
 ## Licença
 
-[MIT](LICENSE) © 2026 Henrike Braga. Você pode usar, modificar e redistribuir,
+[MIT](LICENSE) © 2026 Henrike Pajares Braga. Você pode usar, modificar e redistribuir,
 desde que mantenha o aviso de copyright e a licença.
 
-"Offtape" é o nome do projeto original, mantido por Henrike Braga. Forks são
+"Offtape" é o nome do projeto original, mantido por Henrike Pajares Braga. Forks são
 bem-vindos, mas use outro nome para versões modificadas e deixe claro que não
 são o Offtape oficial.
