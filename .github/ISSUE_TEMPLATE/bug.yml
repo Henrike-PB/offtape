@@ -1,0 +1,46 @@
+name: 🐞 Bug
+description: Algo não funcionou como deveria.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por avisar! Antes de colar logs ou prints, **apague dados
+        pessoais**: Client ID, tokens, caminhos como `/Users/seu-nome` e nomes
+        das suas playlists.
+  - type: textarea
+    id: aconteceu
+    attributes:
+      label: O que aconteceu
+      description: Descreva o problema e os passos para reproduzir. Mensagens de erro ajudam muito.
+    validations:
+      required: true
+  - type: textarea
+    id: esperava
+    attributes:
+      label: O que você esperava
+    validations:
+      required: true
+  - type: dropdown
+    id: sistema
+    attributes:
+      label: Sistema operacional
+      options:
+        - macOS
+        - Linux
+        - Windows
+    validations:
+      required: true
+  - type: input
+    id: versao
+    attributes:
+      label: Versão do Offtape
+      description: "A tag (ex.: v1.0.0) ou o commit, que aparece com `git rev-parse --short HEAD`."
+      placeholder: v1.0.0
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Versão do Python
+      description: Saída de `python --version`.
