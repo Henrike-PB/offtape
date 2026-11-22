@@ -2,7 +2,7 @@
 # yt-dlp fica sem teto de versão de propósito: o YouTube muda com frequência
 # e só as versões mais recentes continuam funcionando. Atualize com:
 #   pip install -U yt-dlp
-yt-dlp>=2025.1.1
+yt-dlp>=2026.10.26
 mutagen>=1.47
 flask>=3.0,<4
 requests>=2.32.4,<3   # >=2.32.4 corrige CVE-2024-35195 e CVE-2024-47081
