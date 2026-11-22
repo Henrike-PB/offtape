@@ -1,0 +1,16 @@
+# Configuração do ruff (lint) usada pela CI e para rodar localmente.
+#
+# De propósito, só ligamos regras que apontam ERROS REAIS (código que quebra ao
+# rodar), e não regras de estilo. Assim o lint não gera uma enxurrada de avisos
+# no código que já existe e só reprova o que de fato precisa ser corrigido.
+#   E9  -> erro de sintaxe / de leitura do arquivo
+#   F63 -> comparação inválida (ex.: `x is "texto"`)
+#   F7  -> erro de sintaxe que o Python só acusa ao rodar (ex.: `break` fora de laço)
+#   F82 -> nome usado sem ter sido definido
+#
+# Rodar localmente:
+#   pip install -r requirements-dev.txt
+#   ruff check .
+
+[lint]
+select = ["E9", "F63", "F7", "F82"]

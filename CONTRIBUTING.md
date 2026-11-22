@@ -28,11 +28,51 @@ Developer Dashboard. Veja o [guia de uso](docs/GUIA_DE_USO.md#3-criando-o-app-no
 
 ## Fluxo de contribuição
 
+O projeto usa o **GitHub Flow**: a `main` é a única branch permanente, e cada
+mudança vem de uma branch curta criada a partir dela. O processo completo está
+no [plano de gerência de configuração](docs/PLANO_GCS.md).
+
 1. Abra uma **issue** descrevendo o bug ou a ideia antes de começar algo grande.
-2. Faça um fork e crie um branch: `git checkout -b minha-melhoria`.
+2. Faça um fork e crie uma branch a partir da `main` no padrão `tipo/descricao`:
+   - `feat/` para funcionalidade nova (ex.: `feat/exportar-historico`);
+   - `fix/` para correção (ex.: `fix/pen-drive-windows`);
+   - `docs/` para documentação;
+   - `chore/` para manutenção (dependências, configuração, CI).
+
+   ```bash
+   git checkout main && git pull
+   git checkout -b fix/pen-drive-windows
+   ```
+
 3. Faça as mudanças seguindo o padrão abaixo.
-4. Faça commits **com assinatura DCO**: `git commit -s -m "Descreve a mudança"`.
-5. Abra um **pull request** explicando o que mudou e como você testou.
+4. Faça commits **com assinatura DCO** e no padrão
+   [Conventional Commits](https://www.conventionalcommits.org/pt-br/)
+   (`tipo: descrição curta`, com os tipos `feat`, `fix`, `docs`, `ci` e `chore`):
+   `git commit -s -m "fix: detecta pen drive no Windows"`.
+5. Abra um **pull request** para a `main`. O template já traz os campos: o que
+   mudou, como você testou e `Closes #N` (o número da issue).
+6. A **CI roda sozinha** em cada PR (veja abaixo). Com ela verde e a revisão
+   feita, o mantenedor faz o merge e a mudança entra no [CHANGELOG](CHANGELOG.md).
+
+## O que a CI verifica
+
+A cada pull request, o GitHub Actions roda no **Ubuntu, macOS e Windows**, com
+Python 3.11 e 3.14:
+
+- **lint** com `ruff check`, só com regras de erros reais;
+- **sintaxe** com `python -m py_compile` dos três scripts;
+- **dependências:** o `requirements.txt` precisa instalar nos três sistemas.
+
+Para rodar o lint na sua máquina antes do push:
+
+```bash
+pip install -r requirements-dev.txt
+ruff check .
+```
+
+A CI **não substitui testar de verdade**. Ela não faz login no Spotify, não
+baixa músicas e não tem pen drive. Rode o app e confira o fluxo que você mudou
+antes de abrir o PR.
 
 ## DCO (Developer Certificate of Origin)
 
@@ -63,14 +103,15 @@ Esqueceu de assinar? Para corrigir o último commit: `git commit --amend -s`.
 
 ## Antes de abrir o PR
 
-- [ ] `python -m py_compile download_playlist.py make_tracks.py spotify_app/app.py` passa.
+- [ ] `python -m py_compile download_playlist.py make_tracks.py spotify_app/app.py` passa
+      (a CI também confere isso sozinha).
 - [ ] Testei a mudança de verdade (descreva como no PR).
 - [ ] **Nenhum dado pessoal** no commit: nada de `config.json`, `history.db`,
       `.flask_secret`, `tracks.json`, `tracks_json/`, `relatorios/`, MP3, Client
       ID, tokens, caminhos como `/Users/seu-nome` ou nomes das suas playlists.
       Confira com `git status` e `git diff --cached`.
 - [ ] Se mudou o uso, atualizei o README e/ou o `docs/GUIA_DE_USO.md`.
-- [ ] Commits assinados com `-s`.
+- [ ] Commits assinados com `-s` e no padrão Conventional Commits.
 
 ## Ideias para contribuir
 

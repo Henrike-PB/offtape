@@ -1,5 +1,7 @@
 # 📼 Offtape
 
+[![CI](https://github.com/Henrike-PB/offtape/actions/workflows/ci.yml/badge.svg)](https://github.com/Henrike-PB/offtape/actions/workflows/ci.yml)
+
 **Sua playlist, offline.** O Offtape pega uma playlist sua do Spotify, encontra
 cada música no YouTube (dando preferência ao *official audio*), baixa como MP3
 e copia para um pen drive, organizada e na ordem certa, pronta para tocar no carro.
@@ -58,7 +60,7 @@ O passo a passo detalhado, com dicas para o carro, está em
 
 | O quê | Versão | Para quê |
 |---|---|---|
-| Python | 3.9+ | rodar o projeto |
+| Python | 3.11+ | rodar o projeto (o yt-dlp atual exige 3.11 ou mais novo) |
 | [ffmpeg](https://ffmpeg.org/) | qualquer recente | converter o áudio em MP3 |
 | Conta no Spotify | grátis ou Premium | ler suas playlists |
 | App no [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) | grátis | obter o *Client ID* |
@@ -199,17 +201,22 @@ Vence a maior nota. Se o vídeo vencedor estiver indisponível, o próximo da li
 
 ```
 offtape/
+├── .github/                   # CI, Dependabot e templates de issue/PR
 ├── spotify_app/
 │   ├── app.py                 # app web local (BFF Flask + página)
 │   ├── config.example.json    # modelo do config.json (Client ID)
 │   └── README.md
 ├── docs/
-│   └── GUIA_DE_USO.md         # passo a passo completo + dicas do carro
+│   ├── GUIA_DE_USO.md         # passo a passo completo + dicas do carro
+│   └── PLANO_GCS.md           # como versionamos e aprovamos mudanças
 ├── download_playlist.py       # downloader (CLI e funções reutilizadas pelo app)
 ├── make_tracks.py             # gera tracks.json a partir de CSV/TXT
 ├── explore_report.ipynb       # análise dos relatórios
 ├── tracks.example.json        # exemplo de lista de faixas
 ├── requirements.txt
+├── requirements-dev.txt       # ferramentas de desenvolvimento (ruff)
+├── ruff.toml                  # configuração do lint
+├── CHANGELOG.md               # o que mudou em cada versão
 ├── CONTRIBUTING.md            # como contribuir (DCO, padrão, checklist)
 ├── LICENSE                    # MIT
 └── README.md

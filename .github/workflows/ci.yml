@@ -1,0 +1,69 @@
+# CI do Offtape: roda sozinha em cada pull request e em cada push na main.
+# Confere, nos 3 sistemas em que o projeto precisa funcionar, que o código não
+# tem erros reais e que as dependências instalam. Não substitui testar o app de
+# verdade antes de abrir o PR (veja o CONTRIBUTING.md).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# A CI só precisa ler o código.
+permissions:
+  contents: read
+
+# Um push novo no mesmo PR/branch cancela a execução anterior, que ficou velha.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # Uma falha num sistema não interrompe os outros: queremos ver todos.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        # As duas pontas do que o projeto suporta: a versão mínima (3.11, a
+        # menor que recebe o yt-dlp atual) e a mais nova.
+        python: ["3.11", "3.14"]
+    defaults:
+      run:
+        # bash também existe no Windows (Git Bash): os mesmos comandos servem
+        # para os 3 sistemas.
+        shell: bash
+
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v7
+
+      - name: Instalar o Python ${{ matrix.python }}
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Lint (ruff, só erros reais)
+        run: |
+          python -m pip install -r requirements-dev.txt
+          ruff check .
+
+      - name: Verificação de sintaxe
+        run: python -m py_compile download_playlist.py make_tracks.py spotify_app/app.py
+
+      - name: Dependências
+        run: |
+          # Instala de verdade só o núcleo (tudo antes do bloco "# Opcional" do
+          # requirements.txt): é o que o app usa, e a CI fica rápida.
+          sed '/^# Opcional/,$d' requirements.txt > nucleo.txt
+          python -m pip install -r nucleo.txt
+          python -c "import yt_dlp, mutagen, flask, requests; print('núcleo ok')"
+          # O arquivo inteiro (com pandas/matplotlib/jupyter) passa pelo
+          # resolvedor do pip sem instalar: garante que resolve neste sistema.
+          python -m pip install --dry-run -r requirements.txt
