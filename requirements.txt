@@ -9,5 +9,5 @@ requests>=2.32.4,<3   # >=2.32.4 corrige CVE-2024-35195 e CVE-2024-47081
 
 # Opcional: notebook de análise dos relatórios (explore_report.ipynb)
 pandas>=2.0
-matplotlib>=3.8
+matplotlib>=3.11.2
 jupyter>=1.0
