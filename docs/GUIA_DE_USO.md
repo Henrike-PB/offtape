@@ -23,7 +23,8 @@ carro. Se você só quer a visão geral, veja o [README](../README.md).
 Você vai precisar de:
 
 - Um computador com **macOS, Linux ou Windows**.
-- **Python 3.9 ou mais novo.** Para conferir: `python3 --version` (macOS/Linux)
+- **Python 3.11 ou mais novo** (versões anteriores recebem um yt-dlp antigo,
+  que não funciona mais com o YouTube). Para conferir: `python3 --version` (macOS/Linux)
   ou `py --version` (Windows). No Windows, instale pelo site python.org e marque
   **"Add python.exe to PATH"** na instalação.
 - Uma conta no **Spotify**.

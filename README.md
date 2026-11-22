@@ -58,7 +58,7 @@ O passo a passo detalhado, com dicas para o carro, está em
 
 | O quê | Versão | Para quê |
 |---|---|---|
-| Python | 3.9+ | rodar o projeto |
+| Python | 3.11+ | rodar o projeto (o yt-dlp atual exige 3.11 ou mais novo) |
 | [ffmpeg](https://ffmpeg.org/) | qualquer recente | converter o áudio em MP3 |
 | Conta no Spotify | grátis ou Premium | ler suas playlists |
 | App no [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) | grátis | obter o *Client ID* |
