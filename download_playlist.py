@@ -19,7 +19,7 @@ bloqueio pelo YouTube. É retomável: faixas cujo MP3 já existe são puladas.
 Ao final, gera um relatório CSV com data e hora no nome.
 
 Requisitos:
-    - Python 3.9+ e ``pip install yt-dlp``
+    - Python 3.11+ (o yt-dlp atual exige) e ``pip install yt-dlp``
     - ffmpeg instalado e no PATH:
         - macOS: ``brew install ffmpeg``
         - Windows: ``winget install Gyan.FFmpeg`` (depois reabra o terminal)
