@@ -8,6 +8,12 @@ Como uma mudança chega até aqui está no [plano de GCS](docs/PLANO_GCS.md).
 
 ## [Não lançado]
 
+### Corrigido
+
+- As mensagens de erro do relatório CSV não trazem mais códigos de cor do
+  terminal (ex.: `\x1b[0;31mERROR:`), que o yt-dlp acrescenta e que sujavam
+  a planilha.
+
 ## [1.0.2] - 2026-11-26
 
 Correções de segurança no app web, apontadas pelo CodeQL. O uso do app não
