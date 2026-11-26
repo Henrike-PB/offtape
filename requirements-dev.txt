@@ -1,4 +1,5 @@
 # Ferramentas de desenvolvimento (não são necessárias para usar o Offtape).
-# A versão fica fixa para o lint dar o mesmo resultado na sua máquina e na CI;
-# o Dependabot propõe as atualizações.
+# As versões ficam fixas para o lint e os testes darem o mesmo resultado na sua
+# máquina e na CI; o Dependabot propõe as atualizações.
 ruff==0.17.6
+pytest==9.2.0

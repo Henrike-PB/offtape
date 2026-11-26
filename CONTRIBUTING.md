@@ -47,7 +47,7 @@ no [plano de gerência de configuração](docs/PLANO_GCS.md).
 3. Faça as mudanças seguindo o padrão abaixo.
 4. Faça commits **com assinatura DCO** e no padrão
    [Conventional Commits](https://www.conventionalcommits.org/pt-br/)
-   (`tipo: descrição curta`, com os tipos `feat`, `fix`, `docs`, `ci` e `chore`):
+   (`tipo: descrição curta`, com os tipos `feat`, `fix`, `docs`, `test`, `ci` e `chore`):
    `git commit -s -m "fix: detecta pen drive no Windows"`.
 5. Abra um **pull request** para a `main`. O template já traz os campos: o que
    mudou, como você testou e `Closes #N` (o número da issue).
@@ -61,14 +61,19 @@ Python 3.11 e 3.14:
 
 - **lint** com `ruff check`, só com regras de erros reais;
 - **sintaxe** com `python -m py_compile` dos três scripts;
-- **dependências:** o `requirements.txt` precisa instalar nos três sistemas.
+- **dependências:** o `requirements.txt` precisa instalar nos três sistemas;
+- **testes** com `pytest` (pasta `tests/`), sem internet, Spotify nem ffmpeg.
 
-Para rodar o lint na sua máquina antes do push:
+Para rodar o lint e os testes na sua máquina antes do push:
 
 ```bash
 pip install -r requirements-dev.txt
 ruff check .
+python -m pytest
 ```
+
+Mudou uma função de `make_tracks.py` ou `download_playlist.py`? Acrescente ou
+ajuste um teste em `tests/` no mesmo PR.
 
 A CI **não substitui testar de verdade**. Ela não faz login no Spotify, não
 baixa músicas e não tem pen drive. Rode o app e confira o fluxo que você mudou

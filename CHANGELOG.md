@@ -13,9 +13,11 @@ Como uma mudança chega até aqui está no [plano de GCS](docs/PLANO_GCS.md).
 - CI no GitHub Actions (`.github/workflows/ci.yml`) em cada pull request e em
   cada push na `main`. Roda em Ubuntu, macOS e Windows, com Python 3.11 e 3.14,
   e faz lint com `ruff` (só erros reais), verificação de sintaxe com
-  `py_compile` e instalação das dependências.
-- Configuração do ruff (`ruff.toml`) e `requirements-dev.txt` com a versão fixa
-  do ruff.
+  `py_compile`, instalação das dependências e testes.
+- Testes automatizados com `pytest` (`tests/`) para `make_tracks.py` e para as
+  funções puras do `download_playlist.py`, sem internet, Spotify nem ffmpeg.
+- Configuração do ruff (`ruff.toml`) e `requirements-dev.txt` com as versões
+  fixas do ruff e do pytest.
 - Dependabot com atualizações semanais de `pip` e de `github-actions`. No
   `pip`, ele só propõe versões que ficam fora das faixas do `requirements.txt`.
 - Templates de pull request e de issue (bug e ideia/melhoria).

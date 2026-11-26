@@ -1,7 +1,7 @@
 # CI do Offtape: roda sozinha em cada pull request e em cada push na main.
 # Confere, nos 3 sistemas em que o projeto precisa funcionar, que o código não
-# tem erros reais e que as dependências instalam. Não substitui testar o app de
-# verdade antes de abrir o PR (veja o CONTRIBUTING.md).
+# tem erros reais, que as dependências instalam e que os testes passam. Não
+# substitui testar o app de verdade antes de abrir o PR (veja o CONTRIBUTING.md).
 name: CI
 
 on:
@@ -51,6 +51,7 @@ jobs:
 
       - name: Lint (ruff, só erros reais)
         run: |
+          # requirements-dev.txt traz o ruff e o pytest, com versões fixas.
           python -m pip install -r requirements-dev.txt
           ruff check .
 
@@ -67,3 +68,7 @@ jobs:
           # O arquivo inteiro (com pandas/matplotlib/jupyter) passa pelo
           # resolvedor do pip sem instalar: garante que resolve neste sistema.
           python -m pip install --dry-run -r requirements.txt
+
+      - name: Testes (pytest)
+        # Testes das funções puras: sem internet, sem Spotify e sem ffmpeg.
+        run: python -m pytest
