@@ -223,6 +223,7 @@ offtape/
 ├── pytest.ini                 # configuração dos testes
 ├── CHANGELOG.md               # o que mudou em cada versão
 ├── CONTRIBUTING.md            # como contribuir (DCO, padrão, checklist)
+├── SECURITY.md                # como reportar uma falha de segurança
 ├── LICENSE                    # MIT
 └── README.md
 
@@ -244,13 +245,19 @@ O Offtape foi feito para rodar **só no seu computador**:
 - Login via OAuth **PKCE**: não existe *client secret* no projeto.
 - Os tokens ficam num cookie de sessão assinado e `HttpOnly`, e a chave de
   assinatura (`.flask_secret`) é criada com permissão `600`.
-- Caminhos, IDs de playlist e drives recebidos da página são validados: o app
-  só lê listas de `tracks_json/` e só escreve nos pen drives detectados (nunca no
-  disco do sistema).
+- Nenhum caminho vindo da página é usado como caminho: o `tracks.json` e o pen
+  drive são escolhidos entre os que o próprio app lista (`tracks_json/` e os
+  pen drives detectados, nunca o disco do sistema), e o nome da playlist vem do
+  Spotify.
+- Mensagens de erro mostradas na página são fixas; o detalhe técnico fica só
+  no terminal.
 
 **Nada pessoal é versionado.** O `.gitignore` já exclui `config.json`,
 `history.db`, `.flask_secret`, suas listas (`tracks.json`, `tracks_json/`),
 MP3 e relatórios. Antes de publicar um fork, confira com `git status`.
+
+Achou uma falha de segurança? **Não abra issue pública**: veja como reportar
+em particular no **[SECURITY.md](SECURITY.md)**.
 
 ## Problemas comuns
 
