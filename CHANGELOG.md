@@ -8,6 +8,11 @@ Como uma mudança chega até aqui está no [plano de GCS](docs/PLANO_GCS.md).
 
 ## [Não lançado]
 
+## [1.0.1] - 2026-11-26
+
+Correção do requisito de Python e um processo de desenvolvimento com CI,
+testes e releases. Nada muda no uso do app.
+
 ### Adicionado
 
 - CI no GitHub Actions (`.github/workflows/ci.yml`) em cada pull request e em
@@ -24,6 +29,8 @@ Como uma mudança chega até aqui está no [plano de GCS](docs/PLANO_GCS.md).
 - Plano de gerência de configuração (`docs/PLANO_GCS.md`).
 - Este CHANGELOG.
 - Badge de status da CI no README.
+- Publicação automática da release no GitHub a partir da tag `vX.Y.Z`, com as
+  notas da seção correspondente deste CHANGELOG.
 
 ### Alterado
 
@@ -53,5 +60,6 @@ Primeira versão do Offtape: sua playlist do Spotify, offline.
 - README, guia de uso (`docs/GUIA_DE_USO.md`) e guia de contribuição com DCO.
 - Suporte a macOS, Linux e Windows, inclusive a detecção de pen drive.
 
-[Não lançado]: https://github.com/Henrike-PB/offtape/compare/v1.0.0...HEAD
+[Não lançado]: https://github.com/Henrike-PB/offtape/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/Henrike-PB/offtape/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Henrike-PB/offtape/releases/tag/v1.0.0
