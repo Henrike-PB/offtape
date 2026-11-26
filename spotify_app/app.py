@@ -344,24 +344,36 @@ def _is_within(child: str, parent: str) -> bool:
 
 
 def resolve_tracks_json(value) -> str | None:
-    """Valida um caminho de tracks.json recebido do navegador.
+    """Encontra, dentro de ``TRACKS_DIR``, o tracks.json pedido pelo navegador.
+
+    Aceita o caminho completo (como vem do histórico) ou só o nome do arquivo,
+    mas **nunca usa o valor recebido como caminho**: compara apenas o nome com
+    a listagem de ``TRACKS_DIR`` feita pelo servidor e devolve o caminho montado
+    a partir dessa listagem. Assim, nada vindo do navegador chega a
+    ``open()``/``isfile()`` (é também o que o CodeQL espera ver).
 
     Args:
         value: Valor bruto de ``json_path`` no corpo da requisição.
 
     Returns:
-        O caminho real (``realpath``) se for um arquivo ``.json`` existente
-        dentro de ``TRACKS_DIR``; ``None`` caso contrário.
+        O caminho real de um arquivo ``.json`` existente em ``TRACKS_DIR``
+        com esse nome, ou ``None`` se não houver.
     """
-    if not isinstance(value, str) or not value:
+    if not isinstance(value, str) or not value or "\x00" in value:
         return None
+    # Só o nome importa; aceita separadores de qualquer sistema.
+    wanted = value.replace("\\", "/").rsplit("/", 1)[-1]
     try:
-        real = os.path.realpath(value)
-    except (ValueError, OSError):          # ex.: byte nulo no caminho
+        entries = os.listdir(TRACKS_DIR)
+    except OSError:
         return None
-    if (real.lower().endswith(".json") and os.path.isfile(real)
-            and _is_within(real, TRACKS_DIR) and _norm(real) != _norm(TRACKS_DIR)):
-        return real
+    for fn in entries:
+        if fn == wanted and fn.lower().endswith(".json"):
+            real = os.path.realpath(os.path.join(TRACKS_DIR, fn))
+            # Um symlink em tracks_json/ apontando para fora continua recusado.
+            if os.path.isfile(real) and _is_within(real, TRACKS_DIR):
+                return real
+            return None
     return None
 
 
@@ -581,30 +593,47 @@ def current_user() -> dict:
     return session["me"]
 
 
-def err_info(e: Exception) -> tuple[str, int]:
-    """Traduz uma exceção em mensagem curta e amigável + status HTTP.
+MSG_SESSAO_EXPIRADA = "Sessão expirada — faça login de novo."
+MSG_PLAYLIST_BLOQUEADA = (
+    "O Spotify não permite ler esta playlist pela API "
+    "(geralmente editorial/algorítmica, de outro usuário, ou indisponível na sua região).")
+MSG_ERRO_INESPERADO = "Erro inesperado no app. Veja o terminal onde ele está rodando para detalhes."
 
-    Nunca devolve traceback: erros do Spotify viram mensagens fixas e demais
-    exceções têm a mensagem truncada.
+
+def err_info(e: Exception) -> tuple[str, int]:
+    """Traduz uma exceção em mensagem amigável + status HTTP para o navegador.
+
+    O texto da exceção **nunca** vai para a resposta: todas as mensagens são
+    constantes, escolhidas pelo tipo do erro. O detalhe técnico (inclusive o
+    traceback, quando inesperado) fica só no log do terminal. Isso evita vazar
+    caminhos, versões ou dados internos pela API.
 
     Args:
-        e: Exceção capturada na rota.
+        e: Exceção capturada na rota (chamar dentro do bloco ``except``).
 
     Returns:
         Tupla ``(mensagem, status_http)``.
     """
+    if isinstance(e, PermissionError):          # levantada por api_get sem token
+        return (MSG_SESSAO_EXPIRADA, 401)
     resp = getattr(e, "response", None)
     if resp is not None:
-        sc = resp.status_code
-        if sc in (403, 404):
-            return ("O Spotify não permite ler esta playlist pela API "
-                    "(geralmente editorial/algorítmica, de outro usuário, ou indisponível na sua região).", sc)
+        sc = getattr(resp, "status_code", None)
+        if sc == 401:
+            return (MSG_SESSAO_EXPIRADA, 401)
+        if sc == 403:
+            return (MSG_PLAYLIST_BLOQUEADA, 403)
+        if sc == 404:
+            return (MSG_PLAYLIST_BLOQUEADA, 404)
         if sc == 429:
             return ("Limite de requisições do Spotify atingido. Aguarde alguns segundos e tente de novo.", 429)
-        return (f"Erro do Spotify (HTTP {sc}).", 502)
+        app.logger.warning("Spotify respondeu HTTP %s", sc)
+        return ("O Spotify retornou um erro. Tente de novo em instantes.", 502)
     if isinstance(e, requests.RequestException):
+        app.logger.warning("Falha de rede ao falar com o Spotify: %s", e)
         return ("Falha de rede ao falar com o Spotify.", 502)
-    return (clip_text(e) or e.__class__.__name__, 400)
+    app.logger.exception("Erro inesperado ao atender a requisição")
+    return (MSG_ERRO_INESPERADO, 500)
 
 
 def parse_track_item(item: dict) -> dict | None:
@@ -625,6 +654,27 @@ def parse_track_item(item: dict) -> dict | None:
     artists = ", ".join(a["name"] for a in tr.get("artists", []) if a.get("name"))
     return {"title": tr["name"], "artist": artists,
             "duration": round((tr.get("duration_ms") or 0) / 1000)}
+
+
+def fetch_playlist_meta(playlist_id: str) -> dict:
+    """Busca no Spotify o nome e o dono de uma playlist.
+
+    O nome usado no arquivo e no histórico vem daqui, e não do navegador: é a
+    fonte confiável e impede que um valor forjado na requisição influencie o
+    nome do arquivo gravado em disco.
+
+    Args:
+        playlist_id: Id (já validado) da playlist no Spotify.
+
+    Returns:
+        ``{"name": str, "owner": str}`` (cortados em ``MAX_TEXT``).
+
+    Raises:
+        requests.HTTPError: Se o Spotify recusar a leitura.
+    """
+    data = api_get(f"/playlists/{playlist_id}", {"fields": "name,owner(display_name)"})
+    return {"name": clip_text(data.get("name")).strip() or "playlist",
+            "owner": clip_text((data.get("owner") or {}).get("display_name"))}
 
 
 def fetch_all_tracks(playlist_id: str) -> list:
@@ -1036,14 +1086,17 @@ def run_export_job(job: dict) -> None:
                     job["ok"] += 1
             except Exception as e:
                 job["failed"] += 1
-                job["error"] = clip_text(e)
+                # Mensagem fixa para o navegador; o detalhe fica só no terminal.
+                job["error"] = "Falha ao copiar um ou mais arquivos (veja o terminal)."
+                app.logger.warning("Falha ao copiar %s: %s", f, e)
             job["done"] += 1
             job["current"] = f
         job["current"] = ""
         job["status"] = "done"
-    except Exception as e:
+    except Exception:
         job["status"] = "error"
-        job["error"] = clip_text(e)
+        job["error"] = "Falha na cópia para o pen drive (veja o terminal)."
+        app.logger.exception("Falha no job de exportação")
 
 
 FFMPEG_MISSING_MSG = (
@@ -1142,9 +1195,11 @@ def run_download_job(job: dict) -> None:
         job["report"] = report_path
         job["current"] = ""
         job["status"] = "done"
-    except (Exception, SystemExit) as e:
+    except (Exception, SystemExit):
         job["status"] = "error"
-        job["error"] = clip_text(e) or e.__class__.__name__
+        # Mensagem fixa para o navegador; o traceback vai para o terminal.
+        job["error"] = "Falha no download (veja o terminal)."
+        app.logger.exception("Falha no job de download")
     finally:
         # Garantia: o job nunca fica preso em "running" (ex.: BaseException rara).
         if job.get("status") == "running":
@@ -1376,7 +1431,7 @@ async function generate(p, btn){
   btn.disabled = true; const old = btn.textContent; btn.innerHTML = '<span class="spin"></span>';
   try{
     const d = await (await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({id:p.id, name:p.name, owner:p.owner})})).json();
+      body: JSON.stringify({id:p.id})})).json();   // nome/dono o servidor busca no Spotify
     if(d.error){ toast('Erro: '+d.error); }
     else { toast(`✅ ${d.count} faixas salvas`); loadHistory(); }
   }catch(e){ toast('Erro: '+e); }
@@ -1768,25 +1823,28 @@ def api_export():
     body = json_body()
     if body is None:
         return jsonify({"error": "corpo JSON inválido"}), 400
-    raw_json_path = body.get("json_path")
-    json_path = resolve_tracks_json(raw_json_path)
+    json_path = resolve_tracks_json(body.get("json_path"))
     if not json_path:
         return jsonify({"error": "tracks.json não encontrado"}), 400
     drive_in = body.get("drive")
-    # Compara normcase(realpath()) dos dois lados: no Windows "e:\" == "E:\".
-    drives = set()
-    for d in list_drives():
-        try:
-            drives.add(_norm(d["path"]))
-        except (ValueError, OSError):
-            continue
+    # O drive usado é SEMPRE o caminho que veio da detecção do servidor
+    # (list_drives), nunca o texto enviado pelo navegador: este só serve para
+    # escolher qual. Compara normcase(realpath()): no Windows "e:\" == "E:\".
+    drive = None
     try:
-        drive_ok = isinstance(drive_in, str) and bool(drive_in) and _norm(drive_in) in drives
+        wanted = _norm(drive_in) if isinstance(drive_in, str) and drive_in and "\x00" not in drive_in else None
     except (ValueError, OSError):
-        drive_ok = False
-    if not drive_ok:
+        wanted = None
+    if wanted:
+        for d in list_drives():
+            try:
+                if _norm(d["path"]) == wanted:
+                    drive = os.path.realpath(d["path"])
+                    break
+            except (ValueError, OSError):
+                continue
+    if not drive:
         return jsonify({"error": "destino inválido — plugue o pen drive e atualize"}), 400
-    drive = os.path.realpath(drive_in)
     try:
         slug = slug_from_json(json_path)
         src = playlist_out_dir(json_path)
@@ -1799,9 +1857,11 @@ def api_export():
         pname = slug
         try:
             with db() as conn:
+                # O histórico guarda o caminho montado (não resolvido); aceita os dois.
                 row = conn.execute("SELECT playlist_name FROM snapshots WHERE json_path IN (?, ?)"
                                    " ORDER BY id DESC LIMIT 1",
-                                   (raw_json_path, json_path)).fetchone()
+                                   (json_path, os.path.join(TRACKS_DIR, os.path.basename(json_path)))
+                                   ).fetchone()
                 if row:
                     pname = row["playlist_name"]
         except sqlite3.Error:
@@ -1833,9 +1893,9 @@ def api_generate():
     """Gera o tracks.json de uma playlist e registra o snapshot no histórico.
 
     Body JSON:
-        id: Id da playlist (base62).
-        name: Nome da playlist (usado no slug do arquivo; até 200 caracteres).
-        owner: Nome do dono (opcional; até 200 caracteres).
+        id: Id da playlist (base62). É o único campo usado: nome e dono são
+            buscados no próprio Spotify (``fetch_playlist_meta``). Campos
+            ``name``/``owner`` enviados pela página são ignorados.
 
     Returns:
         JSON ``{count, json_path}`` ou ``{error}``.
@@ -1846,18 +1906,22 @@ def api_generate():
     pid = body.get("id")
     if not valid_playlist_id(pid):
         return jsonify({"error": "id de playlist inválido"}), 400
-    name = clip_text(body.get("name")).strip()
-    if not name:
-        return jsonify({"error": "nome da playlist ausente"}), 400
-    playlist = {"id": pid, "name": name, "owner": clip_text(body.get("owner"))}
     try:
-        tracks = fetch_all_tracks(playlist["id"])
+        meta = fetch_playlist_meta(pid)
+        playlist = {"id": pid, "name": meta["name"], "owner": meta["owner"]}
+        tracks = fetch_all_tracks(pid)
         if not tracks:
             return jsonify({"error": "playlist sem faixas legíveis"}), 400
 
         os.makedirs(TRACKS_DIR, exist_ok=True)
         fname = f"{date.today().isoformat()}_{slugify(playlist['name'])}.json"
-        json_path = os.path.join(TRACKS_DIR, fname)
+        # Guarda explícita (normpath + prefixo): o arquivo final precisa ficar
+        # dentro de TRACKS_DIR. slugify já só produz letras, dígitos e hífens;
+        # isto é defesa em profundidade.
+        base = os.path.normpath(TRACKS_DIR)
+        json_path = os.path.normpath(os.path.join(base, fname))
+        if not json_path.startswith(base + os.sep):
+            return jsonify({"error": "nome de arquivo inválido"}), 400
         with open(json_path, "w", encoding="utf-8") as f:
             json.dump(tracks, f, ensure_ascii=False, indent=2)
 

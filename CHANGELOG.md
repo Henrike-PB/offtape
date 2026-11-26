@@ -8,6 +8,18 @@ Como uma mudança chega até aqui está no [plano de GCS](docs/PLANO_GCS.md).
 
 ## [Não lançado]
 
+### Segurança
+
+- O app web não usa mais caminhos vindos do navegador. O `tracks.json` e o pen
+  drive são escolhidos pelo nome entre os que o próprio servidor lista
+  (`tracks_json/` e drives detectados). Isso fecha os alertas de *path
+  injection* do CodeQL.
+- As mensagens de erro enviadas à página agora são textos fixos. O detalhe
+  técnico (inclusive o traceback) fica só no terminal, para não vazar
+  caminhos ou dados internos (*information exposure*).
+- Ao gerar o `tracks.json`, o nome e o dono da playlist são buscados no
+  Spotify. O que a página envia nesses campos é ignorado.
+
 ## [1.0.1] - 2026-11-26
 
 Correção do requisito de Python e um processo de desenvolvimento com CI,
