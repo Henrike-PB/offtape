@@ -10,7 +10,8 @@ import json
 
 import pytest
 
-from download_playlist import csv_safe, load_tracks, norm, sanitize_filename, score_entry
+import download_playlist
+from download_playlist import csv_safe, load_tracks, norm, sanitize_filename, score_entry, strip_ansi
 
 
 # --------------------------------------------------------------------------- #
@@ -112,3 +113,34 @@ def test_duracao_proxima_pontua_mais_que_distante():
     perto = _pontua("Blue Monday", "New Order - Topic", 450)
     longe = _pontua("Blue Monday", "New Order - Topic", 449 + 600)
     assert perto > longe
+
+
+# --------------------------------------------------------------------------- #
+# Mensagens do relatório sem códigos de cor
+# --------------------------------------------------------------------------- #
+def test_strip_ansi():
+    assert strip_ansi("\x1b[0;31mERROR:\x1b[0m unable to download") == "ERROR: unable to download"
+    assert strip_ansi("sem cor") == "sem cor"
+
+
+def test_falha_no_download_grava_mensagem_sem_cores(tmp_path, monkeypatch):
+    def candidatos(*args, **kwargs):
+        return [{"webpage_url": "https://exemplo/1", "title": "x"}]
+
+    def falha(*args, **kwargs):
+        raise RuntimeError("\x1b[0;31mERROR:\x1b[0m unable to download video data: HTTP Error 403: Forbidden")
+
+    monkeypatch.setattr(download_playlist, "search_candidates", candidatos)
+    monkeypatch.setattr(download_playlist, "download_track", falha)
+    r = download_playlist.download_one({"n": 1, "title": "Faixa", "artist": "Artista"}, str(tmp_path))
+    assert r["status"] == "failed"
+    assert r["msg"] == "ERROR: unable to download video data: HTTP Error 403: Forbidden"
+
+
+def test_falha_na_busca_grava_mensagem_sem_cores(tmp_path, monkeypatch):
+    def falha(*args, **kwargs):
+        raise RuntimeError("\x1b[1;33mWARNING:\x1b[0m sem rede")
+
+    monkeypatch.setattr(download_playlist, "search_candidates", falha)
+    r = download_playlist.download_one({"n": 1, "title": "Faixa", "artist": "Artista"}, str(tmp_path))
+    assert r["msg"] == "busca: WARNING: sem rede"
