@@ -179,6 +179,11 @@ pasta.
 > - **Windows:** unidades removíveis (ex.: `E:\`). HDs externos que o Windows
 >   classifica como disco fixo não aparecem.
 
+> **O pen drive não aparece nem no Finder/Explorer?** Então o sistema não
+> chegou a montá-lo, e o Offtape não tem como enxergá-lo. Teste outra porta,
+> outro cabo/adaptador ou outro computador. Em computador corporativo,
+> políticas de segurança às vezes bloqueiam pen drives e HDs externos.
+
 ## 8. Deixando o pen drive pronto para o carro
 
 - **Formato:** a maioria dos sons de carro lê **FAT32** ou **exFAT**. Se o carro

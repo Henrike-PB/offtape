@@ -262,6 +262,7 @@ MP3 e relatórios. Antes de publicar um fork, confira com `git status`.
 | Playlist com "O Spotify não permite ler esta playlist" | playlists editoriais/algorítmicas ou de terceiros podem ser bloqueadas pela API |
 | "Sign in to confirm your age" | o Offtape tenta o próximo vídeo; na CLI dá para usar `--cookies-from-browser chrome` |
 | Pen drive não aparece no seletor | plugue e clique em **atualizar**; formate em exFAT/FAT32 se o carro não ler |
+| Pen drive não aparece nem no Finder/Explorer | o sistema não montou o pen drive: teste outra porta ou outro computador. Em computador corporativo, políticas de segurança podem bloquear pen drives |
 | Página responde 403 | acesse por `http://127.0.0.1:8888` ou `http://localhost:8888`, e não pelo IP da rede |
 
 Mais detalhes no [guia de uso](docs/GUIA_DE_USO.md#perguntas-frequentes).
