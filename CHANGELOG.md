@@ -8,6 +8,11 @@ Como uma mudança chega até aqui está no [plano de GCS](docs/PLANO_GCS.md).
 
 ## [Não lançado]
 
+## [1.0.3] - 2026-11-26
+
+Política de segurança, relatório CSV mais limpo e documentação revisada. O uso
+do app não muda.
+
 ### Adicionado
 
 - Política de segurança (`SECURITY.md`): como reportar uma vulnerabilidade
@@ -95,7 +100,8 @@ Primeira versão do Offtape: sua playlist do Spotify, offline.
 - README, guia de uso (`docs/GUIA_DE_USO.md`) e guia de contribuição com DCO.
 - Suporte a macOS, Linux e Windows, inclusive a detecção de pen drive.
 
-[Não lançado]: https://github.com/Henrike-PB/offtape/compare/v1.0.2...HEAD
+[Não lançado]: https://github.com/Henrike-PB/offtape/compare/v1.0.3...HEAD
+[1.0.3]: https://github.com/Henrike-PB/offtape/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/Henrike-PB/offtape/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/Henrike-PB/offtape/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Henrike-PB/offtape/releases/tag/v1.0.0
