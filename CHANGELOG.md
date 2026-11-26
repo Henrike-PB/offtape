@@ -16,7 +16,8 @@ Como uma mudança chega até aqui está no [plano de GCS](docs/PLANO_GCS.md).
   `py_compile` e instalação das dependências.
 - Configuração do ruff (`ruff.toml`) e `requirements-dev.txt` com a versão fixa
   do ruff.
-- Dependabot com atualizações semanais de `pip` e de `github-actions`.
+- Dependabot com atualizações semanais de `pip` e de `github-actions`. No
+  `pip`, ele só propõe versões que ficam fora das faixas do `requirements.txt`.
 - Templates de pull request e de issue (bug e ideia/melhoria).
 - Plano de gerência de configuração (`docs/PLANO_GCS.md`).
 - Este CHANGELOG.

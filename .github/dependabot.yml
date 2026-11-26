@@ -1,15 +1,18 @@
 # Dependabot: abre PRs semanais com atualizações das dependências.
 # Cada PR passa pela CI antes do merge, como qualquer outra mudança.
-#
-# Observação: o yt-dlp não tem teto de versão no requirements.txt, de propósito
-# (o YouTube muda sempre e só as versões novas funcionam). Por isso o Dependabot
-# não abre PR para ele; quem usa atualiza com `pip install -U yt-dlp`.
 version: 2
 updates:
   - package-ecosystem: pip
     directory: /
     schedule:
       interval: weekly
+    # O requirements.txt usa faixas (ex.: flask>=3.0,<4) para quem instala
+    # receber sozinho as versões novas. Por isso o Dependabot só abre PR quando
+    # sai uma versão FORA da faixa (ex.: Flask 4); ele não sobe o piso à toa.
+    # O yt-dlp não tem teto, de propósito (o YouTube muda sempre e só as
+    # versões novas funcionam), então nunca recebe PR: quem usa atualiza com
+    # `pip install -U yt-dlp`.
+    versioning-strategy: increase-if-necessary
     commit-message:
       prefix: "chore(deps)"
 
