@@ -1,6 +1,9 @@
 # 📼 Offtape
 
 [![CI](https://github.com/Henrike-PB/offtape/actions/workflows/ci.yml/badge.svg)](https://github.com/Henrike-PB/offtape/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/Henrike-PB/offtape)](https://github.com/Henrike-PB/offtape/releases/latest)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/downloads/)
+[![Licença MIT](https://img.shields.io/github/license/Henrike-PB/offtape)](LICENSE)
 
 **Sua playlist, offline.** O Offtape pega uma playlist sua do Spotify, encontra
 cada música no YouTube (dando preferência ao *official audio*), baixa como MP3
@@ -275,7 +278,8 @@ Contribuições são bem-vindas! Ideias no radar:
   (tags ID3, nome do arquivo e, em último caso, impressão digital de áudio, por
   exemplo via AcoustID) e criar uma playlist no Spotify com elas.
 - Exportar todas as playlists do histórico de uma vez.
-- Suporte a pen drive no Windows/Linux.
+- Instalação mais fácil (um comando ou um executável), sem precisar montar a
+  `.venv` à mão.
 
 Como contribuir (ambiente, padrão de código, assinatura DCO com `git commit -s`
 e checklist do PR) está em **[CONTRIBUTING.md](CONTRIBUTING.md)**.
