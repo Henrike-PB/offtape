@@ -8,6 +8,11 @@ Como uma mudança chega até aqui está no [plano de GCS](docs/PLANO_GCS.md).
 
 ## [Não lançado]
 
+### Adicionado
+
+- Política de segurança (`SECURITY.md`): como reportar uma vulnerabilidade
+  em particular, o que esperar e o que está no escopo.
+
 ### Corrigido
 
 - As mensagens de erro do relatório CSV não trazem mais códigos de cor do
