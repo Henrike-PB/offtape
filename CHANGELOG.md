@@ -13,6 +13,13 @@ Como uma mudança chega até aqui está no [plano de GCS](docs/PLANO_GCS.md).
 - Política de segurança (`SECURITY.md`): como reportar uma vulnerabilidade
   em particular, o que esperar e o que está no escopo.
 
+### Alterado
+
+- README e guia de uso: o que fazer quando o pen drive não aparece nem no
+  Finder/Explorer (o sistema não o montou).
+- README: badges de última release, Python 3.11+ e licença; a lista de ideias
+  deixa de citar o suporte a pen drive no Windows/Linux, que já existe.
+
 ### Corrigido
 
 - As mensagens de erro do relatório CSV não trazem mais códigos de cor do
