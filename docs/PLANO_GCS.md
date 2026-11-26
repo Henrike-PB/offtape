@@ -31,12 +31,21 @@ A fonte da verdade para "nunca versionado" é o [`.gitignore`](../.gitignore).
 - **Nome da branch:** `tipo/descricao`, com `feat/`, `fix/`, `docs/` ou `chore/`.
   Exemplo: `fix/pen-drive-windows`.
 - **Commits:** [Conventional Commits](https://www.conventionalcommits.org/pt-br/)
-  (`feat:`, `fix:`, `docs:`, `ci:`, `chore:`), sempre com `-s`.
+  (`feat:`, `fix:`, `docs:`, `test:`, `ci:`, `chore:`), sempre com `-s`.
 - **Versões:** [SemVer](https://semver.org/lang/pt-BR/) `MAJOR.MINOR.PATCH`.
   Cada release tem uma tag `vX.Y.Z` na `main` e uma seção no `CHANGELOG.md`.
   - PATCH: correção sem mudar o uso.
   - MINOR: funcionalidade nova compatível.
   - MAJOR: algo que quebra o uso atual (comando, formato do `tracks.json` etc.).
+- **Como sai uma release** (o mantenedor decide a versão):
+  1. PR `chore/release-X.Y.Z` que renomeia `[Não lançado]` para
+     `[X.Y.Z] - data` no `CHANGELOG.md`; CI verde e merge.
+  2. Na `main` atualizada: `git tag -a vX.Y.Z -m "Offtape vX.Y.Z"` e
+     `git push origin vX.Y.Z`.
+  3. O workflow [`release.yml`](../.github/workflows/release.yml) confere
+     que a tag está na `main` e publica a release com as notas daquela
+     seção do CHANGELOG. Para ver as notas antes:
+     `python .github/scripts/notas_release.py vX.Y.Z`.
 
 ## 4. Como uma mudança entra
 
@@ -51,7 +60,8 @@ issue ──► branch tipo/descricao ──► PR com "Closes #N" ──► CI 
 4. A **CI** precisa passar nos 3 sistemas.
 5. O mantenedor **revisa** e faz o merge. A issue fecha sozinha.
 6. A mudança entra em `[Não lançado]` no `CHANGELOG.md`. Na release, essa
-   seção vira `[X.Y.Z]` e a tag é criada.
+   seção vira `[X.Y.Z]`, a tag é criada e a release é publicada sozinha
+   (veja "Como sai uma release" na seção 3).
 
 ## 5. O que a CI verifica
 
@@ -74,7 +84,7 @@ drive dependem de contas e de hardware que a CI não tem.
 | Ferramenta | Uso |
 |---|---|
 | Git + GitHub | versionamento, issues, pull requests, tags e releases |
-| GitHub Actions | CI |
+| GitHub Actions | CI e publicação da release a partir da tag |
 | Dependabot | PRs semanais de atualização (pip e actions) |
 | ruff | lint |
 | pytest | testes automatizados |
