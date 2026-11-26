@@ -8,9 +8,9 @@ propósito: o projeto é pequeno e o processo deve ser leve.
 
 | Versionado (itens de configuração) | Nunca versionado (fica só na sua máquina) |
 |---|---|
-| Código: `download_playlist.py`, `make_tracks.py`, `spotify_app/app.py` | Credenciais e estado do app: `config.json`, `.flask_secret`, `*.db`, `.env` |
-| Dependências: `requirements.txt` (uso) e `requirements-dev.txt` (lint) | Dados pessoais: `tracks.json`, `tracks_json/`, `relatorios/`, `exported-musics/`, `*.mp3`, `*.csv` |
-| Exemplos sem dados pessoais: `tracks.example.json`, `spotify_app/config.example.json` | Ambiente: `.venv/`, `__pycache__/`, `.ipynb_checkpoints/`, `.DS_Store` |
+| Código: `download_playlist.py`, `make_tracks.py`, `spotify_app/app.py` e os testes em `tests/` | Credenciais e estado do app: `config.json`, `.flask_secret`, `*.db`, `.env` |
+| Dependências: `requirements.txt` (uso) e `requirements-dev.txt` (lint e testes) | Dados pessoais: `tracks.json`, `tracks_json/`, `relatorios/`, `exported-musics/`, `*.mp3`, `*.csv` |
+| Exemplos sem dados pessoais: `tracks.example.json`, `spotify_app/config.example.json` | Ambiente: `.venv/`, `__pycache__/`, `.pytest_cache/`, `.ipynb_checkpoints/`, `.DS_Store` |
 | Documentação: `README.md`, `docs/`, `CONTRIBUTING.md`, `CHANGELOG.md`, `LICENSE` | |
 | Processo e automação: `.github/` (CI, Dependabot, templates), `ruff.toml`, `.gitignore` | |
 | Notebook de análise: `explore_report.ipynb` (sem saídas com dados pessoais) | |
@@ -63,6 +63,8 @@ cada PR e em cada push na `main`, em **Ubuntu, macOS e Windows**, com
 2. **Sintaxe** com `python -m py_compile` dos três scripts.
 3. **Dependências:** instala o núcleo do `requirements.txt` e confere que o
    arquivo inteiro resolve (`pip install --dry-run`).
+4. **Testes** com `pytest`: leitura de CSV/TXT, validação do `tracks.json`,
+   nomes de arquivo e pontuação dos candidatos do YouTube.
 
 A CI não substitui testar o app de verdade: login, download e cópia para o pen
 drive dependem de contas e de hardware que a CI não tem.
@@ -75,6 +77,7 @@ drive dependem de contas e de hardware que a CI não tem.
 | GitHub Actions | CI |
 | Dependabot | PRs semanais de atualização (pip e actions) |
 | ruff | lint |
+| pytest | testes automatizados |
 | DCO (`git commit -s`) | origem e licença de cada contribuição |
 | Keep a Changelog | histórico de mudanças por versão |
 

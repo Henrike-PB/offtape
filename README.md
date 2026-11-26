@@ -212,10 +212,12 @@ offtape/
 ├── download_playlist.py       # downloader (CLI e funções reutilizadas pelo app)
 ├── make_tracks.py             # gera tracks.json a partir de CSV/TXT
 ├── explore_report.ipynb       # análise dos relatórios
+├── tests/                     # testes automatizados (pytest)
 ├── tracks.example.json        # exemplo de lista de faixas
 ├── requirements.txt
-├── requirements-dev.txt       # ferramentas de desenvolvimento (ruff)
+├── requirements-dev.txt       # ferramentas de desenvolvimento (ruff, pytest)
 ├── ruff.toml                  # configuração do lint
+├── pytest.ini                 # configuração dos testes
 ├── CHANGELOG.md               # o que mudou em cada versão
 ├── CONTRIBUTING.md            # como contribuir (DCO, padrão, checklist)
 ├── LICENSE                    # MIT
