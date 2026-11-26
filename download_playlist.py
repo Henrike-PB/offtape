@@ -230,6 +230,26 @@ def load_tracks(path: str) -> list:
     return data
 
 
+# Sequências de cor/estilo do terminal (ANSI), ex.: "\x1b[0;31mERROR:\x1b[0m".
+_ANSI_RE = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
+
+
+def strip_ansi(text: str) -> str:
+    """Remove códigos de cor do terminal (ANSI) de um texto.
+
+    O yt-dlp colore as mensagens de erro quando o terminal aceita cores, e
+    esses códigos acabavam gravados no relatório CSV (ex.:
+    ``\x1b[0;31mERROR:\x1b[0m``), sujando a planilha.
+
+    Args:
+        text: Texto possivelmente com códigos ANSI.
+
+    Returns:
+        O mesmo texto, sem os códigos.
+    """
+    return _ANSI_RE.sub("", text)
+
+
 def norm(s: str) -> str:
     """Normaliza um texto para comparação aproximada.
 
@@ -512,7 +532,7 @@ def download_one(track: dict, out_dir: str, bitrate: str = "320",
     try:
         candidates = search_candidates(track, search_results, cookies_browser)
     except Exception as e:
-        return {"status": "failed", "mp3": None, "url": "", "chosen_title": "", "msg": f"busca: {e}"}
+        return {"status": "failed", "mp3": None, "url": "", "chosen_title": "", "msg": f"busca: {strip_ansi(str(e))}"}
     if not candidates:
         return {"status": "failed", "mp3": None, "url": "", "chosen_title": "", "msg": "nenhum resultado no YouTube"}
 
@@ -527,7 +547,7 @@ def download_one(track: dict, out_dir: str, bitrate: str = "320",
                     "chosen_title": cand.get("title", ""),
                     "msg": "baixado" if rank == 1 else f"baixado (fallback #{rank})"}
         except Exception as e:
-            last = str(e)
+            last = strip_ansi(str(e))   # a mensagem vai para o relatório CSV
     return {"status": "failed", "mp3": None, "url": "", "chosen_title": "", "msg": last or "falha no download"}
 
 
